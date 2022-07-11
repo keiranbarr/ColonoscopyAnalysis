@@ -4,18 +4,28 @@
 # TODO: decide on data organization scheme
 # TODO: implement calibration transform hierarchy
 
-# TODO: don't calculate on blank sequence
+    # Identify patient ID
+    # Make folder for patient (if it doesn't already exist)
+    # Place ouptput spreadsheets in the folder
+
 # TODO: more robust pervasive-proofing
 # TODO: save results to excel
 # TODO: loop through specified patients
 
 import os
 
-scenePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Novices\2017-04-29\26-PracticeSecondHalf-Posttest\2017-04-29-Scene.mrb'
-metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\Colonoscopy-metrics'
-metricScriptPathList = []
+analyzePracticeData = False
+saveResults = True
+
+formatter = "{:04d}".format
+practiceDataNameList = [formatter(i) for i in range(1000)]
+
+scenePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Novices\PerkLab5\2017-04-29\26-PracticeSecondHalf-Posttest\2017-04-29-Scene.mrb'
+metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\ColonoscopyAnalysis\Colonoscopy-metrics'
+outputSavePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022'
 
 # Find path of all metric scripts
+metricScriptPathList = []
 for file in os.listdir(metricScriptPath):
     filepath = os.path.join(metricScriptPath,file)
     metricScriptPathList.append(filepath)
@@ -66,6 +76,13 @@ logic.SetMetricInstancesRolesToID(peNode,rightTransform.GetID(),"RightTool",slic
 allSequenceBrowsers = slicer.mrmlScene.GetNodesByClass("vtkMRMLSequenceBrowserNode")
 
 for browser in allSequenceBrowsers:
+
+    if browser.GetNumberOfItems() == 0:
+        continue
+    
+    if browser.GetName() in practiceDataNameList and analyzePracticeData == False:
+        continue
+    
     # Set tracked sequence browser
     peNode.SetTrackedSequenceBrowserNodeID(browser.GetID())
     
