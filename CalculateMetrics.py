@@ -1,9 +1,6 @@
 # This code is for testing the Perk Evaluator slicer module
 # By calculating metrics on a single transform sequence for a single metric
 
-# TODO: Implement transform hierarchy
-    # Load calibration files
-    # Apply transforms
 # TODO: calculate on all patients in a directory
 # TODO: Fix memory leaks
 
@@ -36,6 +33,8 @@ for file in os.listdir(metricScriptPath):
 for file in os.listdir(patientPath):
     if file.endswith("-Scene.mrb"):
         slicer.util.loadScene(os.path.join(patientPath,file))
+    elif file == "RasToReference.h5" or file == "ScopeTipToScope.h5":
+        slicer.util.loadTransform(os.path.join(patientPath,file))
 
 peNode = slicer.vtkMRMLPerkEvaluatorNode()
 logic = slicer.modules.perkevaluator.logic()
@@ -61,8 +60,6 @@ for script in metricScriptPathList:
         scope = slicer.mrmlScene.GetFirstNodeByName("ScopeToReference")
         metricInstance.SetRoleID(transform.GetID(),"Any",slicer.vtkMRMLMetricInstanceNode.TransformRole)
     '''
-        
-
 
 # Set transform role
 scopeTransform = slicer.mrmlScene.GetFirstNodeByName("ScopeToReference")
@@ -75,6 +72,26 @@ logic.SetMetricInstancesRolesToID(peNode,leftTransform.GetID(),"LeftTool",slicer
 rightTransform = slicer.mrmlScene.GetFirstNodeByName("RightHandToReference")
 logic.SetMetricInstancesRolesToID(peNode,rightTransform.GetID(),"RightTool",slicer.vtkMRMLMetricInstanceNode.TransformRole)
 
+# Load calibration transforms
+ScopeTipToScope = slicer.mrmlScene.GetFirstNodeByName("ScopeTipToScope")
+ReferenceToRAS = slicer.mrmlScene.GetFirstNodeByName("RasToReference")
+ReferenceToRAS.Inverse()
+
+# Reference -> RAS
+    # LH -> Reference
+    # RH -> Reference
+
+    # Scope -> Reference
+        # ScopeTip -> Scope
+
+# Is the hierarchy correct?
+# Should ScopeTipToScope switch w ScopeToRef?
+
+# Construct transform hierarchy outlined above
+rightTransform.SetAndObserveTransformNodeID(ReferenceToRAS.GetID())
+leftTransform.SetAndObserveTransformNodeID(ReferenceToRAS.GetID())
+ScopeTipToScope.SetAndObserveTransformNodeID(scopeTransform.GetID())
+scopeTransform.SetAndObserveTransformNodeID(ReferenceToRAS.GetID())
 
 allSequenceBrowsers = slicer.mrmlScene.GetNodesByClass("vtkMRMLSequenceBrowserNode")
 for browser in allSequenceBrowsers:
