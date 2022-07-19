@@ -17,8 +17,8 @@ practiceDataNameList = [formatter(i) for i in range(1000)]
 
 # User-defined
 metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\ColonoscopyAnalysis\Colonoscopy-metrics'
-outputSavePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\TEST\OUTPUT'
-dataPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\TEST'
+outputSavePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput'
+dataPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Novices'
 
 patientPaths = []
 

@@ -15,6 +15,10 @@ class BimanualDexterity( PerkEvaluatorMetric ):
     return "rho"
     
   @staticmethod
+  def IsPervasive():
+    return True
+    
+  @staticmethod
   def IsShared():
     return False
     
