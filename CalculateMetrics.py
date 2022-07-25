@@ -1,9 +1,7 @@
 # This code is for testing the Perk Evaluator slicer module
 # By calculating metrics on a single transform sequence for a single metric
 
-# TODO: calculate on all patients in a directory
-# TODO: Fix memory leaks
-# TODO: Don't calculate on ScopeToReference
+# TODO: Accomodate for handedness (maybe organize the output into dominant vs non-dominant hand?)
 
 import os
 
@@ -17,21 +15,24 @@ practiceDataNameList = [formatter(i) for i in range(1000)]
 
 # User-defined
 metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\ColonoscopyAnalysis\Colonoscopy-metrics'
-outputSavePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput'
-dataPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Novices'
+outputSavePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Expert'
+dataPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Attending\Tracking'
+leftHandedPatientIDs = ['026','062','067','101','152']
 
 patientPaths = []
-
 for file in os.listdir(dataPath):
     d = os.path.join(dataPath, file)
     if os.path.isdir(d):
         patientPaths.append(d)
+        
 
 for patient in patientPaths:
     
     slicer.mrmlScene.Clear()
     
     patientID = os.path.basename(patient)
+    
+    print(patientID)
     
     # Find path of all metric scripts
     metricScriptPathList = []
