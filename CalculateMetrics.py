@@ -1,27 +1,30 @@
 # This code is for testing the Perk Evaluator slicer module
 # By calculating metrics on a single transform sequence for a single metric
 
-# TODO: Accomodate for handedness (maybe organize the output into dominant vs non-dominant hand?)
+# TODO: Don't calculate on ScopeTipToScope
 
 import os
+
 
 # User-defined
 analyzePracticeData = False
 saveResults = True
 
+inputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Attending\ReformattedTracking'
+outputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Expert'
+
+metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\ColonoscopyAnalysis\Colonoscopy-metrics'
+leftHandedPatientIDs = ['026','062','067','101','152']
+
+
+
 # Make list of all possible practice data names
 formatter = "{:04d}".format
 practiceDataNameList = [formatter(i) for i in range(1000)]
 
-# User-defined
-metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\ColonoscopyAnalysis\Colonoscopy-metrics'
-outputSavePath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Expert'
-dataPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Attending\Tracking'
-leftHandedPatientIDs = ['026','062','067','101','152']
-
 patientPaths = []
-for file in os.listdir(dataPath):
-    d = os.path.join(dataPath, file)
+for file in os.listdir(inputPath):
+    d = os.path.join(inputPath, file)
     if os.path.isdir(d):
         patientPaths.append(d)
         
@@ -31,9 +34,7 @@ for patient in patientPaths:
     slicer.mrmlScene.Clear()
     
     patientID = os.path.basename(patient)
-    
-    print(patientID)
-    
+        
     # Find path of all metric scripts
     metricScriptPathList = []
     for file in os.listdir(metricScriptPath):
@@ -71,9 +72,20 @@ for patient in patientPaths:
     logic.SetMetricInstancesRolesToID(peNode,scopeTransform.GetID(),"Needle",slicer.vtkMRMLMetricInstanceNode.TransformRole)
     
     leftTransform = slicer.mrmlScene.GetFirstNodeByName("LeftHandToReference")
-    logic.SetMetricInstancesRolesToID(peNode,leftTransform.GetID(),"LeftTool",slicer.vtkMRMLMetricInstanceNode.TransformRole)
-    
     rightTransform = slicer.mrmlScene.GetFirstNodeByName("RightHandToReference")
+    
+    if patientID[:3] in leftHandedPatientIDs:
+        leftTransform.SetName("DominantHandToReference")
+        rightTransform.SetName("NonDominantHandToReference")
+        
+    else:
+        # Patient 166 requires me to run this twice
+        # Wish I could tell you why
+        leftTransform.SetName("NonDominantHandToReference")
+        leftTransform.SetName("NonDominantHandToReference")
+        rightTransform.SetName("DominantHandToReference")
+        
+    logic.SetMetricInstancesRolesToID(peNode,leftTransform.GetID(),"LeftTool",slicer.vtkMRMLMetricInstanceNode.TransformRole)
     logic.SetMetricInstancesRolesToID(peNode,rightTransform.GetID(),"RightTool",slicer.vtkMRMLMetricInstanceNode.TransformRole)
     
     # Load calibration transforms
@@ -122,7 +134,7 @@ for patient in patientPaths:
         
         if saveResults == True:
             # Make new folder if it doesn't exist
-            outputFolder = os.path.join(outputSavePath,patientID)
+            outputFolder = os.path.join(outputPath,patientID)
             if not os.path.exists(outputFolder):
                 os.makedirs(outputFolder)
             
