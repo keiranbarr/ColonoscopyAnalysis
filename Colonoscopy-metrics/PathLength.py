@@ -13,14 +13,13 @@ class PathLength( PerkEvaluatorMetric ):
     return "mm"
     
   @staticmethod
-  def IsPervasive():
-    return True
-    
-  @staticmethod
   def IsShared():
     return True
     
-  
+  @staticmethod
+  def IsPervasive():
+    return True
+    
   # Instance methods
   def __init__( self ):
     PerkEvaluatorMetric.__init__( self )

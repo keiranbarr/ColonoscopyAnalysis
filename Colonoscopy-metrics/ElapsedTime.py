@@ -12,9 +12,8 @@ class ElapsedTime( PerkEvaluatorMetric ):
     return "s"
     
   @staticmethod
-  def IsShared():
-    return True
-    
+  def GetTransformRoles():
+    return [ "Needle" ]
   
   # Instance methods
   def __init__( self ):

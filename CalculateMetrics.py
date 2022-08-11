@@ -10,12 +10,17 @@ import os
 analyzePracticeData = False
 saveResults = True
 
-inputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Attending\ReformattedTracking'
-outputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Expert'
+# EXPERT
+#inputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Attending\ReformattedTracking'
+#outputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Expert'
+
+# NOVICE
+
+inputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Data\Novices'
+outputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Novice'
 
 metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\ColonoscopyAnalysis\Colonoscopy-metrics'
 leftHandedPatientIDs = ['026','062','067','101','152']
-
 
 
 # Make list of all possible practice data names
@@ -63,8 +68,12 @@ for patient in patientPaths:
         # Pervasive metrics already are loaded in with 3 roles set
         # If we load a pervasive metric, we will need to set these manually
         
-        # To avoid this problem, all metrics being run will need to be made pervasive
-    
+        if not logic.GetMetricPervasive(metricScript.GetID()):
+            metricInstance = logic.CreateMetricInstance(metricScript)
+            
+            # Instantiate scripts
+            metricInstance.SetAssociatedMetricScriptID(metricScript.GetID())
+            peNode.AddMetricInstanceID(metricInstance.GetID())
     
     # Set transform role
     scopeTransform = slicer.mrmlScene.GetFirstNodeByName("ScopeToReference")

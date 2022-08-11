@@ -3,7 +3,7 @@ import vtk
 from PythonMetricsCalculator import PerkEvaluatorMetric
 
 class MotionSmoothness( PerkEvaluatorMetric ):
-
+  
   # Static methods
   @staticmethod
   def GetMetricName():
@@ -12,16 +12,11 @@ class MotionSmoothness( PerkEvaluatorMetric ):
   @staticmethod  
   def GetMetricUnit():
     return "mm/s^3"
-
-  @staticmethod
-  def IsPervasive():
-    return True
-
-  @staticmethod
-  def IsShared():
-    return True
     
-    
+  @staticmethod
+  def GetTransformRoles():
+    return [ "Needle" ]
+  
   # Instance methods  
   def __init__( self ):
     PerkEvaluatorMetric.__init__( self )

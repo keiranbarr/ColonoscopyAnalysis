@@ -17,37 +17,45 @@ outputPath = r"P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Anal
 
 expertSpreadsheet = []
 noviceSpreadsheet = []
-    
+
+output = []
+
 # It doesn't matter which one is added to which, just as long as the 2nd one's headers are removed
-novice = pd.read_csv(noviceSpreadsheetPath)
+novice = pd.read_csv(noviceSpreadsheetPath,header=None)
 transposed_novice = (novice.values).T
 
-expert = pd.read_csv(expertSpreadsheetPath)
-transposed_expert = np.delete((expert.values).T,0,0)
+expert = pd.read_csv(expertSpreadsheetPath,header=None)
+transposed_expert = (expert.values).T
         
+first_row = np.insert(transposed_novice[0],0,"Group")
+first_row = np.insert(first_row,1,"Sequence_group")
+
+
+output.append(first_row)
+
+for row in transposed_novice[1:]:
+
+    sequence = row[0]
+    
+    if sequence.endswith('A') or sequence.endswith('B'):
+        row = np.insert(row,0,"Pre-trained novice")
+        row = np.insert(row,1,sequence[:-1])
+        output.append(row)
+        
+    if sequence.endswith('C') or sequence.endswith('D'):
+        row = np.insert(row,0,"Post-trained novice")
+        row = np.insert(row,1,sequence[:-1])
+        output.append(row)
+        
+for row in transposed_expert[1:]:
+    sequence = row[0]
+    row = np.insert(row,0,"Expert")
+    row = np.insert(row,1,sequence[:-1])
+    output.append(row)
+
+
 with open(os.path.join(outputPath,"novice_expert_combined_data.csv"), newline='', mode='w') as output_file:
     output_writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-    first_row = np.insert(transposed_novice[0],0,"Group")
-    first_row = np.insert(first_row,1,"Sequence_group")
-
-    output_writer.writerow(first_row)
     
-    for row in transposed_novice[1:]:
-        sequence = row[0]
-        
-        if sequence.endswith('A') or sequence.endswith('B'):
-            row = np.insert(row,0,"Pre-trained novice")
-            row = np.insert(row,1,sequence[:-1])
-            output_writer.writerow(row)
-            
-        if sequence.endswith('C') or sequence.endswith('D'):
-            row = np.insert(row,0,"Post-trained novice")
-            row = np.insert(row,1,sequence[:-1])
-            output_writer.writerow(row)
-            
-    for row in transposed_expert[1:]:
-        sequence = row[0]
-        row = np.insert(row,0,"Expert")
-        row = np.insert(row,1,sequence[:-1])
+    for row in output:
         output_writer.writerow(row)

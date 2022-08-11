@@ -12,8 +12,8 @@ import csv
 
 
 # User defined
-inputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Expert'
-outputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\AnalyzeResultsOutput\Experts'
+inputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\CalculateMetricsOutput\Novice'
+outputPath = r'P:\data\PerkTutor\Colonoscopy\2016-2017-Protocol-Reorganized\Analysis\PerkTutorResults2022\AnalyzeResultsOutput\Novices'
 
 metricScriptPath = r'C:\Users\Keiran Barr\Documents\Summer 22\ColonoscopyAnalysis\Colonoscopy-metrics'
 excludeRolesList = ["Any = ScopeToReference"]
@@ -118,24 +118,21 @@ for file in os.listdir(inputPath):
 with open(os.path.join(outputPath,"aggregateData.csv"), mode='w') as output_file:
     output_writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
+    sequenceKey = ["Sequence"]
+    for sequence in metricsObjectsList[0].roles[0].sequences:
+        sequenceKey.append(sequence)
+
+    output_writer.writerow(sequenceKey)
+
     for metricObject in metricsObjectsList:
-        
-        roleKey = [metricObject.name+"_roles"]
-        sequenceKey = [metricObject.name+"_sequence"]
-        metricValues = [metricObject.name+"_values"]
-
-        # Prevents saving results from metrics that weren't loaded correctly
-        saveMetricResults = False
-
+                
         for role in metricObject.roles:
-            saveMetricResults = True
+            
+            row = [metricObject.name+" ("+role.name.split(" = ")[1] + ")"]
+            
             for index, value in enumerate(role.values):
                 
-                roleKey.append(role.name)
-                sequenceKey.append(role.sequences[index])
-                metricValues.append(value)
-          
-        if saveMetricResults:
-            output_writer.writerow(roleKey)
-            output_writer.writerow(sequenceKey)
-            output_writer.writerow(metricValues)
+                row.append(value)
+                
+            output_writer.writerow(row)
+        
